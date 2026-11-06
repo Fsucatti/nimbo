@@ -19,11 +19,18 @@
   backdrop-filter: blur(14px);
   translate: 0 -100%;
   opacity: 0;
-  transition: translate 250ms ease, opacity 250ms ease;
+  /* While hidden it sits over the bottom of the sky, so it must not catch clicks or focus.
+     Visibility switches off only after the fade-out has finished. */
+  visibility: hidden;
+  pointer-events: none;
+  transition: translate 250ms ease, opacity 250ms ease, visibility 0s linear 250ms;
 }
 .section-bar.is-visible .section-bar-inner {
   translate: 0 0;
   opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: translate 250ms ease, opacity 250ms ease, visibility 0s;
 }
 .section-bar-place {
   display: inline-flex;

@@ -170,6 +170,27 @@ test("when the forecast fails, it explains and offers to try again", async ({ pa
   await expect(page.getByRole("button", { name: "Try again" })).toBeVisible();
 });
 
+test("the hidden section bar doesn't cover the next 24 hours, and appears once the sky scrolls away", async ({ page }) => {
+  await mockServices(page);
+  await page.goto(PLACE_URL);
+  const bar = page.locator(".section-bar-inner");
+  await expect(bar).toBeHidden();
+
+  // The bottom of the hourly strip, where its scrollbar sits, belongs to the strip itself.
+  const strip = page.getByRole("region", { name: "Next 24 hours" });
+  const box = (await strip.boundingBox())!;
+  const covered = await page.evaluate(([x, y]) => !document.elementFromPoint(x, y)?.closest(".next-hours"), [box.x + 80, box.y + box.height - 4]);
+  expect(covered).toBe(false);
+  await strip.evaluate((node) => (node.scrollLeft = 200));
+  await expect.poll(() => strip.evaluate((node) => node.scrollLeft)).toBeGreaterThan(0);
+
+  await page.locator("#days").scrollIntoViewIfNeeded();
+  await expect(bar).toBeVisible();
+  await bar.getByRole("link", { name: "Air", exact: true }).click();
+  await expect(page).toHaveURL(/#air$/);
+  await expect(page.locator("#air").getByRole("heading", { name: "Air quality" })).toBeInViewport();
+});
+
 test("unknown pages still open the app", async ({ page }) => {
   await mockServices(page);
   const response = await page.goto("/some/old/link");
