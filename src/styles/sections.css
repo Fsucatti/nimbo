@@ -1,0 +1,527 @@
+/* ------------------------------------------------------------------
+   Page layout below the sky
+   ------------------------------------------------------------------ */
+main {
+  transition: opacity 300ms;
+}
+main.is-stale {
+  opacity: 0.55;
+  pointer-events: none;
+}
+.dashboard {
+  max-width: calc(var(--content) + 2 * var(--gutter));
+  margin: 0 auto;
+  padding: 8px var(--gutter) 40px;
+}
+.section {
+  padding: 56px 0 8px;
+  scroll-margin-top: 64px;
+}
+.section + .section {
+  border-top: 1px solid var(--line);
+}
+.section-head {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 32px;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+.section-intro {
+  margin-top: 8px;
+  max-width: 64ch;
+  color: var(--ink-2);
+}
+.section-aside {
+  color: var(--ink-2);
+}
+.section-error {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  padding: 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  color: var(--ink-2);
+}
+.section-loading {
+  padding: 24px 0;
+  color: var(--muted);
+}
+
+/* ------------------------------------------------------------------
+   Charts: shared anatomy
+   ------------------------------------------------------------------ */
+.chart {
+  margin: 0;
+  min-width: 0;
+}
+/* Chart boxes take their width from the layout, never from the drawing inside them. */
+.meteogram-plot,
+.nowcast-chart,
+.day-chart,
+.altitude-chart,
+.year-chart,
+.normals-chart,
+.aqi-forecast,
+.model-strips {
+  min-width: 0;
+  overflow: hidden;
+}
+.meteogram-plot svg,
+.nowcast-chart svg,
+.day-chart svg,
+.altitude-chart svg,
+.year-chart svg,
+.normals-chart svg,
+.aqi-forecast svg,
+.model-strips svg {
+  display: block;
+}
+.chart-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin-bottom: 10px;
+}
+.chart-title {
+  font-weight: 600;
+}
+.chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  color: var(--ink-2);
+  font-size: 0.875rem;
+}
+.chart-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+.table-toggle {
+  min-height: 34px;
+  padding: 6px 10px;
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+.chart-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin: 22px 0 18px;
+}
+.grid {
+  stroke: var(--grid);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.baseline {
+  stroke: var(--axis);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.axis-label {
+  fill: var(--muted);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+.track-label {
+  fill: var(--ink-2);
+  font-size: 12.5px;
+  font-weight: 560;
+}
+.value-label {
+  fill: var(--ink);
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 4px;
+  stroke-linejoin: round;
+}
+.series-line {
+  fill: none;
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.series-area {
+  fill-opacity: 0.12;
+  stroke: none;
+}
+.series-dot {
+  stroke: var(--paper);
+  stroke-width: 2;
+}
+.night {
+  fill: var(--night-shade);
+}
+.day-line {
+  stroke: var(--axis);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+.day-label {
+  fill: var(--ink);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+.wind-arrow {
+  fill: var(--ink-2);
+}
+.cloud-empty {
+  fill: var(--cloud-0);
+}
+.crosshair line {
+  stroke: var(--ink);
+  stroke-width: 1;
+  stroke-opacity: 0.55;
+  shape-rendering: crispEdges;
+}
+.table-wrap {
+  max-height: 520px;
+  overflow: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+}
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+.data-table th,
+.data-table td {
+  padding: 8px 12px;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--line);
+}
+.data-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--raise);
+  color: var(--ink-2);
+  font-weight: 560;
+}
+.data-table tbody th {
+  font-weight: 540;
+}
+.data-table .numeric {
+  text-align: right;
+}
+
+/* ------------------------------------------------------------------
+   Hour by hour
+   ------------------------------------------------------------------ */
+.nowcast,
+.nowcast-dry {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--sunken);
+}
+.nowcast-sentence {
+  margin-bottom: 8px;
+}
+.nowcast-chart {
+  width: 100%;
+}
+.meteogram-plot {
+  width: 100%;
+  touch-action: pan-y;
+  cursor: crosshair;
+  border-radius: var(--radius-s);
+}
+.meteogram-plot svg {
+  overflow: visible;
+}
+.readout {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px 24px;
+  flex-wrap: wrap;
+  min-height: 74px;
+  margin-bottom: 8px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-m);
+  background: var(--raise);
+}
+.readout-time {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 160px;
+}
+.readout-time strong {
+  display: block;
+  font-size: 1.0625rem;
+}
+.readout-condition {
+  display: block;
+  color: var(--ink-2);
+  font-size: 0.875rem;
+}
+.readout-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 22px;
+  margin: 0;
+  flex: 1;
+}
+.readout-values div {
+  display: flex;
+  flex-direction: column;
+}
+.readout-values dd {
+  margin: 0;
+  font-weight: 620;
+  font-size: 1rem;
+}
+.readout-values dt {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+/* ------------------------------------------------------------------
+   16 days
+   ------------------------------------------------------------------ */
+.temp-scale {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+.temp-scale-bar {
+  width: 140px;
+  height: 6px;
+  border-radius: 3px;
+}
+.days {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.day {
+  border-bottom: 1px solid var(--line);
+}
+.day-row {
+  display: grid;
+  grid-template-columns: 116px 38px minmax(0, 1.2fr) 96px 48px minmax(80px, 2fr) 48px 22px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 64px;
+  padding: 8px 6px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+}
+.day-row:hover {
+  background: var(--accent-wash);
+}
+.day-name {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+  line-height: 1.25;
+}
+.day-date {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 450;
+}
+.day-condition {
+  color: var(--ink-2);
+  font-size: 0.9375rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.day-chance {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  column-gap: 4px;
+  color: var(--precip);
+  font-size: 0.875rem;
+  font-weight: 560;
+  font-variant-numeric: tabular-nums;
+}
+.day-chance svg {
+  fill: currentColor;
+}
+.day-amount {
+  width: 100%;
+  color: var(--muted);
+  font-weight: 450;
+  font-size: 0.8125rem;
+}
+.day-low,
+.day-high {
+  font-size: 1.0625rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.day-low {
+  color: var(--ink-2);
+}
+.day-high {
+  font-weight: 600;
+  text-align: left;
+}
+.range-track {
+  position: relative;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--sunken);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.range-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 3px;
+}
+.range-now {
+  position: absolute;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow: 0 0 0 2px var(--paper);
+}
+.day-chevron {
+  color: var(--muted);
+  transition: rotate 200ms;
+}
+.day.is-open .day-chevron {
+  rotate: 180deg;
+}
+.day-details {
+  padding: 8px 6px 22px;
+}
+.day-chart {
+  width: 100%;
+  margin-bottom: 12px;
+}
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 14px 24px;
+  margin: 0;
+}
+.detail dt {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+.detail dd {
+  margin: 2px 0 0;
+  font-weight: 600;
+}
+.detail-note {
+  display: block;
+  color: var(--ink-2);
+  font-weight: 450;
+  font-size: 0.8125rem;
+}
+
+/* ------------------------------------------------------------------
+   Footer
+   ------------------------------------------------------------------ */
+.footer {
+  border-top: 1px solid var(--line);
+  background: var(--sunken);
+  color: var(--ink-2);
+  font-size: 0.875rem;
+}
+.footer-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 24px 48px;
+  max-width: calc(var(--content) + 2 * var(--gutter));
+  margin: 0 auto;
+  padding: 40px var(--gutter) 48px;
+}
+.footer-brand {
+  margin-bottom: 6px;
+  color: var(--ink);
+  font-weight: 700;
+  font-stretch: 90%;
+  font-size: 1.125rem;
+}
+.footer-title {
+  margin-bottom: 8px;
+  color: var(--ink);
+  font-size: 0.9375rem;
+  font-stretch: 100%;
+  font-weight: 600;
+}
+.footer ul {
+  margin: 0;
+  padding-left: 18px;
+  display: grid;
+  gap: 6px;
+}
+
+@media (max-width: 760px) {
+  .section {
+    padding-top: 44px;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+  .day-row {
+    grid-template-columns: 70px 34px 44px 38px minmax(40px, 1fr) 38px;
+    gap: 8px;
+    padding: 8px 2px;
+  }
+  .day-condition,
+  .day-chevron,
+  .day-amount {
+    display: none;
+  }
+  .day-low,
+  .day-high {
+    font-size: 1rem;
+  }
+  .readout {
+    gap: 10px;
+  }
+  .readout-values {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px 12px;
+    width: 100%;
+  }
+  .readout-values dd {
+    font-size: 0.9375rem;
+  }
+  .footer-inner {
+    grid-template-columns: 1fr;
+  }
+  .chart-controls {
+    margin-left: 0;
+  }
+}
